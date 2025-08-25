@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 // Desafio Batalha Naval - MateCheck
 // Este código inicial serve como base para o desenvolvimento do sistema de Batalha Naval.
@@ -70,6 +71,7 @@ int atualizarTabuleiro(short int tabuleiro[10][10], short int navio[], short int
         for(short int i = l; i < l + tamanhoNavio; i++) {
             if(i >= 10 || tabuleiro[i][c] != 0) {
                 ok = 0;
+                printf("\n |* %c%d ocupado! Navio descartado... *| \n\n", coluna, linha);
                 break;
             }
         }
@@ -84,6 +86,7 @@ int atualizarTabuleiro(short int tabuleiro[10][10], short int navio[], short int
     } else if(posicionamento == 2) {
         for(short int i = c; i < c + tamanhoNavio; i++) {
             if(i >= 10 || tabuleiro[l][i] != 0) {
+                printf("\n |* %c%d ocupado! Navio descartado... *| \n\n", coluna, linha);
                 ok = 0;
                 break;
             }
@@ -101,42 +104,64 @@ int atualizarTabuleiro(short int tabuleiro[10][10], short int navio[], short int
     return ok;
 }
 
+struct Navio {
+    short int tamanho;
+    short int posicionamento;
+    short int linha;
+    char coluna;
+    short int *partes;
+};
+
 int main() {
     // Nível Novato - Posicionamento dos Navios
     short int tabuleiro[10][10];
-    short int tamanhoNavio1, posicionamentoNavio1, linhaNavio1;
-    char colunaNavio1;
-    short int tamanhoNavio2, posicionamentoNavio2, linhaNavio2;
-    char colunaNavio2;
+    short int numeroDeNavios = 4;
+    struct Navio *navios = malloc(4 * sizeof(struct Navio));
 
     inicializarTabuleiro(tabuleiro);
     exibirTabuleiro(tabuleiro);
     exibirInfo();
-    printf("Navio 1:");
-    printf("\n  -> Tamanho (2 a 4): ");
-    scanf("%hd", &tamanhoNavio1);
-    short int navio1[tamanhoNavio1];
-    inicializarNavio(navio1, tamanhoNavio1);
-    printf("  -> Posicionamento (1. Vertical | 2. Horizontal): ");
-    scanf("%hd", &posicionamentoNavio1);
-    printf("  -> Linha (1 a 10): ");
-    scanf("%hd", &linhaNavio1);
-    printf("  -> Coluna (A a J): ");
-    scanf(" %c", &colunaNavio1);
-    atualizarTabuleiro(tabuleiro, navio1, tamanhoNavio1, posicionamentoNavio1, linhaNavio1, colunaNavio1);
-    printf("\nNavio 2:");
-    printf("\n  -> Tamanho (2 a 4): ");
-    scanf("%hd", &tamanhoNavio2);
-    short int navio2[tamanhoNavio2];
-    inicializarNavio(navio2, tamanhoNavio2);
-    printf("  -> Posicionamento (1. Vertical | 2. Horizontal): ");
-    scanf("%hd", &posicionamentoNavio2);
-    printf("  -> Linha (1 a 10): ");
-    scanf("%hd", &linhaNavio2);
-    printf("  -> Coluna (A a J): ");
-    scanf(" %c", &colunaNavio2);
-    atualizarTabuleiro(tabuleiro, navio2, tamanhoNavio2, posicionamentoNavio2, linhaNavio2, colunaNavio2);
+    for(int i = 0; i < numeroDeNavios; i++) {
+        printf("Navio %d:", (i+1));
+        printf("\n  -> Tamanho (2 a 4): ");
+        scanf("%hd", &navios[i].tamanho);
+        if(navios[i].tamanho < 2 || navios[i].tamanho > 4) {
+            printf("\n |* Tamanho inválido! *| \n");
+            printf(" |* Saindo... *| \n\n");
+            return 1;
+        }
+        navios[i].partes = malloc(navios[i].tamanho * sizeof(short int));
+        inicializarNavio(navios[i].partes, navios[i].tamanho);
+        printf("  -> Posicionamento (1. Vertical | 2. Horizontal): ");
+        scanf("%hd", &navios[i].posicionamento);
+        if(navios[i].posicionamento < 1 || navios[i].posicionamento > 2) {
+            printf("\n |* Posicionamento inválido! *| \n");
+            printf(" |* Saindo... *| \n\n");
+            free(navios);
+            return 1;
+        }
+        printf("  -> Linha (1 a 10): ");
+        scanf("%hd", &navios[i].linha);
+        if(navios[i].linha < 1 || navios[i].linha > 10) {
+            printf("\n |* Linha inválida! *| \n");
+            printf(" |* Saindo... *| \n\n");
+            free(navios);
+            return 1;
+        }
+        printf("  -> Coluna (A a J): ");
+        scanf(" %c", &navios[i].coluna);
+                if(navios[i].coluna < 'A' || navios[i].coluna > 'J') {
+            printf("\n |* Coluna inválida! *| \n");
+            printf(" |* Saindo... *| \n\n");
+            free(navios);
+            return 1;
+        }
+        atualizarTabuleiro(tabuleiro, navios[i].partes, navios[i].tamanho, navios[i].posicionamento, navios[i].linha, navios[i].coluna);
+    }
     exibirTabuleiro(tabuleiro);
+
+    // Liberando memória alocada
+    free(navios);
 
     // Nível Aventureiro - Expansão do Tabuleiro e Posicionamento Diagonal
     // Sugestão: Expanda o tabuleiro para uma matriz 10x10.
