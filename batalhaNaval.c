@@ -68,35 +68,48 @@ int atualizarTabuleiro(short int tabuleiro[10][10], short int navio[], short int
     // printf("\n\n\nPos: %d\n\n\n", posicionamento);
 
     if(posicionamento == 1) {
+        // Vertical
         for(short int i = l; i < l + tamanhoNavio; i++) {
             if(i >= 10 || tabuleiro[i][c] != 0) {
                 ok = 0;
-                printf("\n |* %c%d ocupado! Navio descartado... *| \n\n", coluna, linha);
+                printf("\n |* Não há espaço! Navio descartado... *| \n\n");
                 break;
             }
         }
 
         if(ok) {
-            for(short int i = l; i < l + tamanhoNavio; i++) {
-                for(short int j = 0; j < tamanhoNavio; j++) {
-                    tabuleiro[i][c] = navio[j];
-                }
+            for(short int i = l, j = 0; i < l + tamanhoNavio; i++, j++) {
+                tabuleiro[i][c] = navio[j];
             }
         }
     } else if(posicionamento == 2) {
+        // Horizontal
         for(short int i = c; i < c + tamanhoNavio; i++) {
             if(i >= 10 || tabuleiro[l][i] != 0) {
-                printf("\n |* %c%d ocupado! Navio descartado... *| \n\n", coluna, linha);
+                printf("\n |* Não há espaço! Navio descartado... *| \n\n");
                 ok = 0;
                 break;
             }
         }
 
         if(ok) {
-            for(short int i = c; i < c + tamanhoNavio; i++) {
-                for(short int j = 0; j < tamanhoNavio; j++) {
-                    tabuleiro[l][i] = navio[j];
-                }
+            for(short int i = c, j = 0; i < c + tamanhoNavio; i++, j++) {
+                tabuleiro[l][i] = navio[j];
+            }
+        }
+    } else {
+        // Diagonal
+        for(short int i = l, col = c; i < l + tamanhoNavio; i++, col++) {
+            if(i >= 10 || tabuleiro[i][col] != 0) {
+                printf("\n |* Não há espaço! Navio descartado... *| \n\n");
+                ok = 0;
+                break;
+            }
+        }
+
+        if(ok) {
+            for(short int i = l, j = 0, col = c; i < l + tamanhoNavio; i++, j++, col++) {
+                tabuleiro[i][col] = navio[j];
             }
         }
     }
@@ -116,7 +129,7 @@ int main() {
     // Nível Novato - Posicionamento dos Navios
     short int tabuleiro[10][10];
     short int numeroDeNavios = 4;
-    struct Navio *navios = malloc(4 * sizeof(struct Navio));
+    struct Navio *navios = malloc(numeroDeNavios * sizeof(struct Navio));
 
     inicializarTabuleiro(tabuleiro);
     exibirTabuleiro(tabuleiro);
@@ -132,9 +145,9 @@ int main() {
         }
         navios[i].partes = malloc(navios[i].tamanho * sizeof(short int));
         inicializarNavio(navios[i].partes, navios[i].tamanho);
-        printf("  -> Posicionamento (1. Vertical | 2. Horizontal): ");
+        printf("  -> Posicionamento (1. Vertical | 2. Horizontal | 3. Diagonal): ");
         scanf("%hd", &navios[i].posicionamento);
-        if(navios[i].posicionamento < 1 || navios[i].posicionamento > 2) {
+        if(navios[i].posicionamento < 1 || navios[i].posicionamento > 3) {
             printf("\n |* Posicionamento inválido! *| \n");
             printf(" |* Saindo... *| \n\n");
             free(navios);
